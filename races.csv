@@ -1,0 +1,36 @@
+race_id,bucket,dem_margin_mean_pts
+R01,Safe D,25
+R02,Safe D,25
+R03,Safe D,25
+R04,Safe D,25
+R05,Safe D,25
+R06,Safe D,25
+R07,Safe D,25
+R08,Safe D,25
+R09,Safe D,25
+R10,Safe D,25
+R11,Safe D,25
+R12,Likely D,10
+R13,Likely D,10
+R14,Toss-up,0
+R15,Lean D,4
+R16,Toss-up,0
+R17,Toss-up,0
+R18,Toss-up,0
+R19,Tilt R,-1.5
+R20,Tilt R,-1.5
+R21,Lean R,-4
+R22,Likely R,-10
+R23,Likely R,-10
+R24,Safe R,-25
+R25,Safe R,-25
+R26,Safe R,-25
+R27,Safe R,-25
+R28,Safe R,-25
+R29,Safe R,-25
+R30,Safe R,-25
+R31,Safe R,-25
+R32,Safe R,-25
+R33,Safe R,-25
+R34,Safe R,-25
+R35,Safe R,-25
