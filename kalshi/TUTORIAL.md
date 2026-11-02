@@ -1,4 +1,4 @@
-# Who will control the US Senate? Reading uncertainty with a Gaussian copula
+# Who will control the US Senate? Reading uncertainty behind bets with a Gaussian copula
 
 *Masoud Jafari, CFA. Data: Kalshi daily close, 30 Oct 2026 (the 31 Oct 04:00 UTC candle).*
 
