@@ -6,6 +6,18 @@ This is the same structure as a credit portfolio: each race is a "name", a Democ
 
 > **Not a forecast.** `races.csv` contains *synthetic* inputs: a stylized map built from rating buckets (Safe / Likely / Lean / Toss-up) with assumed margins. It is tuned to be near a knife-edge so the effect of dependence is easy to see. Replace the margins with your own polling averages to run it on real data.
 
+## Real market data: Kalshi, November 2026
+
+The [`kalshi/`](kalshi/) folder applies the same one-factor Gaussian copula to **real Kalshi prices** for the 35 Senate races and the Senate-control market, and backs out the market-implied correlation between races.
+
+- On 30 Oct 2026 Kalshi gave Democrats a **70.5%** chance of control. Treated as independent, the race prices would give **87%**. The implied correlation that reconciles the two is **rho ≈ 0.38**.
+- Expected Democratic seats are **52.4** at any rho, but the standard deviation is **3.7 seats** at the implied rho against **1.7** with independent races.
+- Read the full write-up in [`kalshi/TUTORIAL.md`](kalshi/TUTORIAL.md), or the short version [on LinkedIn](https://www.linkedin.com/feed/update/urn:li:ugcPost:7522806196270198784).
+
+![Kalshi chance of Democratic control and expected seats](kalshi/charts/senate_control_risk_chart.png)
+
+The rest of this README describes the original synthetic-inputs demo (`senate_copula.py`, `races.csv`), which is unchanged.
+
 ## Method
 
 1. Each contested race *i* has an expected Democratic margin `mu_i` and a total uncertainty `SIGMA = 4.5` points, giving a marginal win probability `p_i = Phi(mu_i / SIGMA)`.
