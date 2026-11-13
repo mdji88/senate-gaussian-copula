@@ -1,22 +1,23 @@
 # Senate seat counts: independent races vs a Gaussian copula
 
-**Question:** if each Senate race keeps the same win probability, how much does a shared "national mood" shock (dependence between races) change the odds of extreme outcomes?
+*Masoud Jafari, CFA*
+
+## Question
+
+If each Senate race keeps the same win probability, how much does a shared "national mood" shock (dependence between races) change the odds of extreme outcomes?
 
 This is the same structure as a credit portfolio: each race is a "name", a Democratic win is a "default", and the seat count is the portfolio loss. A one-factor Gaussian copula is the Vasicek / CDO-pricing model, applied here to elections.
 
-> **Not a forecast.** `races.csv` contains *synthetic* inputs: a stylized map built from rating buckets (Safe / Likely / Lean / Toss-up) with assumed margins. It is tuned to be near a knife-edge so the effect of dependence is easy to see. Replace the margins with your own polling averages to run it on real data.
+## Data
 
-## Real market data: Kalshi, November 2026
+The repo holds two analyses that use the same model:
 
-The [`kalshi/`](kalshi/) folder applies the same one-factor Gaussian copula to **real Kalshi prices** for the 35 Senate races and the Senate-control market, and backs out the market-implied correlation between races.
+| Folder | Inputs | What it shows |
+|---|---|---|
+| [`synthetic/`](synthetic/) | `synthetic/data/races.csv`: a stylized map built from rating buckets (Safe / Likely / Lean / Toss-up) with assumed margins | How dependence alone reshapes the seat distribution |
+| [`kalshi/`](kalshi/) | Real Kalshi prices, November 2026: the 35 Senate races and the Senate-control market | The correlation between races that the market implies |
 
-- On 30 Oct 2026 Kalshi gave Democrats a **70.5%** chance of control. Treated as independent, the race prices would give **87%**. The implied correlation that reconciles the two is **rho ≈ 0.38**.
-- Expected Democratic seats are **52.4** at any rho, but the standard deviation is **3.7 seats** at the implied rho against **1.7** with independent races.
-- Read the full write-up in [`kalshi/TUTORIAL.md`](kalshi/TUTORIAL.md), or the short version [on LinkedIn](https://www.linkedin.com/feed/update/urn:li:ugcPost:7522806196270198784).
-
-![Kalshi chance of Democratic control and expected seats](kalshi/charts/senate_control_risk_chart.png)
-
-The rest of this README describes the original synthetic-inputs demo (`senate_copula.py`, `races.csv`), which is unchanged.
+> **The synthetic inputs are not a forecast.** They are tuned to sit near a knife-edge so the effect of dependence is easy to see. Replace the margins with your own polling averages to run the model on real data.
 
 ## Method
 
@@ -26,7 +27,18 @@ The rest of this README describes the original synthetic-inputs demo (`senate_co
 4. `rho` is the share of each race's variance driven by the national factor. Marginals are identical for every `rho`; only the dependence changes.
 5. 400,000 simulations per `rho`. 34 Democratic-caucus seats are not up, and 51 seats are needed for control.
 
-## Result (synthetic inputs)
+The Kalshi analysis takes the race prices as the marginals and solves for the `rho` that reproduces the Senate-control price. See [`kalshi/TUTORIAL.md`](kalshi/TUTORIAL.md) for the details.
+
+## Result
+
+### Real market data: Kalshi, 30 Oct 2026
+
+- Kalshi gave Democrats a **70.5%** chance of control. Treated as independent, the race prices would give **87%**. The implied correlation that reconciles the two is **rho ≈ 0.38**.
+- Expected Democratic seats are **52.4** at any rho, but the standard deviation is **3.7 seats** at the implied rho against **1.7** with independent races.
+
+![Kalshi chance of Democratic control and expected seats](kalshi/charts/senate_control_risk_chart.png)
+
+### Synthetic inputs
 
 | rho | mean seats | sd | 5th–95th pct | P(≥51) | P(≥55) | P(≤45) |
 |---|---|---|---|---|---|---|
@@ -35,7 +47,7 @@ The rest of this README describes the original synthetic-inputs demo (`senate_co
 | 0.50 | 50.74 | 2.43 | 47–55 | 51.6% | 6.8% | 0.2% |
 | 0.75 | 50.74 | 2.84 | 47–55 | 49.9% | 12.7% | 0.4% |
 
-Running the script also writes `seat_distribution.svg`, a chart of the four seat-count distributions.
+![Seat-count distribution for four values of rho](synthetic/charts/seat_distribution.svg)
 
 **Findings**
 
@@ -46,22 +58,29 @@ Running the script also writes `seat_distribution.svg`, a chart of the four seat
 
 ## Limitations
 
-- `rho` is a sensitivity parameter, **not calibrated**. A natural next step is to estimate it from historical Senate polling errors across states.
+- In the synthetic demo, `rho` is a sensitivity parameter, **not calibrated**.
 - A Gaussian copula has no tail dependence. Real "wave" elections may cluster more than this model allows (compare Student-t copulas).
 - State-level correlation is uniform here. In practice, similar states (demographics, region) move together more than dissimilar ones.
-- Race margins and the total uncertainty are assumed, not estimated.
+- Synthetic race margins and the total uncertainty are assumed, not estimated.
 
 ## Run it
 
 ```bash
 pip install -r requirements.txt
-python senate_copula.py
+
+cd synthetic && python senate_copula.py      # writes results/results.csv and charts/seat_distribution.svg
+cd ../kalshi && python kalshi_implied_rho.py # writes results/control_series.csv and charts/*.png
 ```
 
-Outputs `results.csv` and `seat_distribution.svg` (the chart). Edit `races.csv` and the assumptions at the top of `senate_copula.py` to experiment.
+Edit `synthetic/data/races.csv` and the assumptions at the top of `synthetic/senate_copula.py` to experiment.
 
 ## Next steps
 
 - Calibrate `rho` from historical polling-error correlation across states.
 - Swap in a Student-t copula and compare tail behavior.
 - Add a state-similarity correlation matrix instead of a single factor.
+
+## Read more
+
+- Full write-up of the Kalshi analysis: [`kalshi/TUTORIAL.md`](kalshi/TUTORIAL.md)
+- Short version [on LinkedIn](https://www.linkedin.com/feed/update/urn:li:ugcPost:7522806196270198784)

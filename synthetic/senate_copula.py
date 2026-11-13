@@ -4,9 +4,12 @@ Question: if every race has the same marginal win probability, how much does
 *dependence* (a shared "national mood" shock) change the chance of extreme
 outcomes and of crossing the majority line?
 
-Run:  python senate_copula.py
-Outputs: results.csv, seat_distribution.svg and a printed summary.
+Run from this folder:  python senate_copula.py
+Reads data/races.csv. Outputs: results/results.csv, charts/seat_distribution.svg
+and a printed summary.
 """
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 from scipy.stats import norm
@@ -14,6 +17,10 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 plt.rcParams["svg.fonttype"] = "none"
+
+HERE = Path(__file__).resolve().parent
+DATA = HERE / "data"; OUT = HERE / "results"; FIG = HERE / "charts"
+OUT.mkdir(exist_ok=True); FIG.mkdir(exist_ok=True)
 
 # ---- assumptions (edit these) ------------------------------------------------
 SIGMA_TOTAL = 4.5        # total sd of a race's margin around its mean (points)
@@ -24,7 +31,7 @@ N_SIMS = 400_000
 SEED = 7
 # ------------------------------------------------------------------------------
 
-races = pd.read_csv("races.csv")
+races = pd.read_csv(DATA / "races.csv")
 mu = races["dem_margin_mean_pts"].to_numpy()
 p = norm.cdf(mu / SIGMA_TOTAL)          # marginal D win probability per race
 n = len(p)
@@ -61,7 +68,7 @@ for rho in RHOS:
     })
 
 out = pd.DataFrame(rows).round(4)
-out.to_csv("results.csv", index=False)
+out.to_csv(OUT / "results.csv", index=False)
 print(f"Sum of marginal win probabilities: {p.sum():.3f} "
       f"(expected D seats = {HOLDOVER_D + p.sum():.2f} for every rho)\n")
 print(out.to_string(index=False))
@@ -82,5 +89,5 @@ ax.set_ylabel("Probability")
 ax.set_title("Same marginals, different dependence: the seat distribution fattens as rho rises")
 ax.legend(frameon=False)
 fig.tight_layout()
-fig.savefig("seat_distribution.svg")
-print("\nSaved results.csv and seat_distribution.svg")
+fig.savefig(FIG / "seat_distribution.svg")
+print("\nSaved results/results.csv and charts/seat_distribution.svg")
